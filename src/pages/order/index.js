@@ -70,7 +70,7 @@ class Order extends React.Component {
                 <Form>
                     {formFields}
                 </Form>
-                <Link className="btn btn-warning" to={routesMap.home}>
+                <Link className="btn btn-warning" to={routesMap.main}>
                     {this.props.t('back')}
                 </Link>
                 &nbsp;
