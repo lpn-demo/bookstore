@@ -5,6 +5,10 @@ import withStore from '~/hocs/withStore';
 import { Form, Button } from 'react-bootstrap';
 import styles from "~p/Autorization/styles.module.sass";
 import autorModel from '~s/autorization';
+
+import { Formik } from 'formik';
+
+
 class Login extends React.Component {
 
     componentDidMount() {
@@ -14,52 +18,93 @@ class Login extends React.Component {
     componentDidUpdate() {
         this.loadPage();
     }
+
     loadPage = () => {
         if (autorModel.access) {
             this.props.history.push(routesMap.main);
         }
     }
-    
+
 
     render() {
-        let formFields = [];
-        for (let name in autorModel.formDataLogin) {
-            let field = autorModel.formDataLogin[name];
-            
-            formFields.push(
-                <Form.Group key={name} controlId={'order-form-' + name}>
-                    <Form.Label>{this.props.t(field.label)}</Form.Label>
-                    <Form.Control
-                        type={field.type}
-                        value={field.value}
-                        onChange={(e) => autorModel.change(name, e.target.value, "login")}
-                    />
-                    {field.valid === null || field.valid ? '' :
-                        <Form.Text className="text-muted">
-                            {this.props.t(field.errorText)}
-                        </Form.Text>
-                    }
-                </Form.Group>
-            );
-        }
+        let formFields;
+        formFields = <Formik
+            initialValues={{ email: '', password: '' }}
+            validate={values => {
+                let errors = {};
+                if (!values.email) {
+                    errors.email = 'required';
+                } else if (
+                    !/^.+@.+$/.test(values.email)
+                ) {
+                    errors.email = 'wrong email';
+                }
 
+                if (!values.password) {
+                    errors.password = 'required';
+                } else if (
 
-        return (
-            <div>
-                <div className={styles.login}>
-                    <form onSubmit={autorModel.login}>
-                        <h3 className={styles.title}>{this.props.t('login')}</h3>
-                        {formFields}
-                        <Button
-                            block
-                            disabled={!autorModel.formValid}
-                            type="submit"
-                        >
+                    !(values.password.length > 6)
+                ) {
+                    errors.password = 'password length';
+                }
+                return errors;
+            }}
+            onSubmit={(values, { setSubmitting }) => {
+                autorModel.login(values);
+                setSubmitting(false);
+            }}
+        >
+            {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                isSubmitting,
+                /* and other goodies */
+            }) => (
+                    <form onSubmit={handleSubmit}>
+                        <Form.Group>
+                            <Form.Label>{this.props.t('email')}</Form.Label>
+                            <Form.Control
+                                type="email"
+                                name="email"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                value={values.email}
+                            />
+                            <Form.Text className="text-muted">
+                                {this.props.t(errors.email && touched.email && errors.email)}
+                            </Form.Text>
+
+                            <Form.Label>{this.props.t('password')}</Form.Label>
+                            <Form.Control
+                                type="password"
+                                name="password"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                value={values.password}
+                            />
+                            <Form.Text className="text-muted">
+                                {this.props.t(errors.password && touched.password && errors.password)}
+                            </Form.Text>
+
+                        </Form.Group>
+
+                        <Button type="submit" disabled={isSubmitting}>
                             {this.props.t('login')}
-                        </Button>
+                        </Button><br />
                         <Link to={routesMap.reset}>{this.props.t('updatePassword')}</Link>
                     </form>
-                </div>
+                )}
+        </Formik>
+
+        return (
+            <div className={styles.login}>
+                <h3 className={styles.title}>{this.props.t('login')}</h3>
+                {formFields}
             </div>
         )
     }

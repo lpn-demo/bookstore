@@ -58,7 +58,8 @@ const resources = {
       'signed': 'Signed in as',
       'email exist': 'This mail already exists',
       'wrong email or password': 'Wrong email or password',
-      'changeTheme': 'Change theme'
+      'changeTheme': 'Change theme',
+      'required' : 'Required'
     }
   },
   ru: {
@@ -115,7 +116,8 @@ const resources = {
       'signed': 'Вы вошли как',
       'email exist': 'Эта почта уже существует',
       'wrong email or password': 'Неверный пароль или email',
-      'changeTheme': 'Сменить тему'
+      'changeTheme': 'Сменить тему',
+      'required' : 'Обязательное поле'
     }
   }
 };
